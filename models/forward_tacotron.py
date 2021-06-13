@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn import Embedding, BatchNorm1d
+from torch.nn import Embedding, BatchNorm1d, LeakyReLU
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 from utils.text.symbols import phonemes
@@ -76,10 +76,10 @@ class ConvGru(nn.Module):
                  dropout=0.,
                  padding_value=0) -> None:
         super().__init__()
-        self.first_conv = BatchNormConv(in_dims, conv_dims, kernel_size, activation=torch.relu)
+        self.first_conv = BatchNormConv(in_dims, conv_dims, kernel_size, activation='lrelu')
         self.last_conv = BatchNormConv(conv_dims, conv_dims, kernel_size, activation=None)
         self.convs = torch.nn.ModuleList([
-            BatchNormConv(conv_dims, conv_dims, kernel_size, activation=torch.relu) for _ in range(conv_layers - 2)
+            BatchNormConv(conv_dims, conv_dims, kernel_size, activation='lrelu') for _ in range(conv_layers - 2)
         ])
         self.gru = nn.GRU(conv_dims, gru_dims, batch_first=True, bidirectional=True)
         self.dropout = dropout
@@ -112,6 +112,8 @@ class BatchNormConv(nn.Module):
         self.conv = nn.Conv1d(in_channels, out_channels, kernel, stride=1, padding=kernel // 2, bias=False)
         self.bnorm = BatchNorm1d(out_channels)
         self.activation = activation
+        if activation == 'lrelu':
+            self.activation = LeakyReLU(0.2)
 
     def forward(self, x: torch.tensor) -> torch.tensor:
         x = self.conv(x)

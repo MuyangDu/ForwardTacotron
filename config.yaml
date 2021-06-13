@@ -106,8 +106,8 @@ tacotron:
 forward_tacotron:
 
   model:
-
-    series_embed_dims: 64       # grapheme embedding dimension for series predictor
+    # params for series predictors (duration, pitch, energy)
+    series_embed_dims: 64        # phoneme embedding dimension for series predictor
     series_conv_layers: 3
     series_kernel_size: 5
 
@@ -115,12 +115,10 @@ forward_tacotron:
     durpred_dropout: 0.5
     durpred_rnn_dims: 64
 
-    embed_dims: 256             # embedding dimension for the graphemes/phoneme inputs
-
     pitch_conv_dims: 256
     pitch_rnn_dims: 128
     pitch_dropout: 0.5
-    pitch_emb_dims: 32           # embedding dimension of pitch, set to 0 if you don't want pitch conditioning
+    pitch_emb_dims: 32            # embedding dimension of pitch, set to 0 if you don't want pitch conditioning
     pitch_proj_dropout: 0
 
     energy_conv_dims: 256
@@ -128,6 +126,9 @@ forward_tacotron:
     energy_dropout: 0.5
     energy_emb_dims: 32           # embedding dimension of energy, set to 0 if you don't want energy conditioning
     energy_proj_dropout: 0
+
+    # params for main network
+    embed_dims: 256               # embedding dimension for the phoneme inputs
 
     prenet_kernel_size: 1
     prenet_conv_layers: 2
